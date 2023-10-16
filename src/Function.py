@@ -1,11 +1,13 @@
 import numpy as np
-from Variable import Variable
+from src.Variable import Variable
+from src.tools import *
+
 
 class Function:
     def __call__(self, input):
         x = input.data
         y = self.forward(x)
-        output = Variable(y)
+        output = Variable(as_array(y))
         output.set_creator(self)
         self.input = input
         self.output = output
