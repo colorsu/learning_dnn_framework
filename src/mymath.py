@@ -1,15 +1,22 @@
-from src.Function import Function
-from src.Variable import Variable
+from Function import Function
+from Variable import Variable
 import numpy as np
 
+
+class Add(Function):
+    def forward(self, x0, x1):
+        y = x0 + x1
+        return y
+    def backward(self, gy):
+        return gy, gy
 
 class Square(Function):
     def forward(self, x):
         return x ** 2
 
     def backward(self, gy):
-        x = self.input.data
-        gx = 2 * x * gy
+        x = self.inputs[0].data
+        gx = 2 * x *gy
         return gx
 
 
@@ -18,7 +25,7 @@ class Exp(Function):
         return np.exp(x)
 
     def backward(self, gy):
-        x = self.input.data
+        x = self.inputs[0].data
         gx = np.exp(x) * gy
         return gx
 
@@ -32,23 +39,37 @@ def exp(x):
     f = Exp()
     return f(x)
 
+def add(x0, x1):
+    f = Add()
+    return f(x0, x1)
 
 # A = Square()
 # B = Exp()
 # C = Square()
 
-x = Variable(np.array(0.5))
+x = Variable(np.array(2.0))
+# y = add(x, x)
+# y.backward()
+# print(x.grad)
+
+# y = add(add(x, x), x)
+# 
+# print(x.grad)
 a = square(x)
-b = exp(a)
-y = square(b)
+y = add(square(a), square(a))
+y.backward()
+print(y.data)
+print(x.grad)
+# b = exp(a)
+# y = square(b)
 
 # y.grad = np.array(1.0)
 # b.grad = C.backward(y.grad)
 # a.grad= B.backward(b.grad)
 # x.grad = A.backward(a.grad)
 
-y.grad = np.array(1.0)
-y.backward()
+# y.grad = np.array(1.0)
+# y.backward()
 # C = y.creator
 # b = C.input
 # b.grad = C.backward(y.grad)
@@ -60,4 +81,4 @@ y.backward()
 # x.grad = A.backward(a.grad)
 
 
-print(x.grad)
+# print(x.grad)
