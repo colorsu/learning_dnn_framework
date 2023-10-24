@@ -1,5 +1,4 @@
-from Function import Function
-from Variable import Variable
+from Variable import Function
 import numpy as np
 
 
@@ -29,6 +28,11 @@ class Exp(Function):
         gx = np.exp(x) * gy
         return gx
 
+def add(x0, x1):
+    f = Add()
+    return f(x0, x1)
+
+
 
 def square(x):
     f = Square()
@@ -39,15 +43,13 @@ def exp(x):
     f = Exp()
     return f(x)
 
-def add(x0, x1):
-    f = Add()
-    return f(x0, x1)
+
 
 # A = Square()
 # B = Exp()
 # C = Square()
 
-x = Variable(np.array(2.0))
+# x = Variable(np.array(2.0))
 # y = add(x, x)
 # y.backward()
 # print(x.grad)

@@ -19,23 +19,31 @@ from Config import *
 # print(dy)
 
 
-Config.enable_backprop = True
-x = Variable(np.ones((100, 100, 100)))
-y = square(square(square(x)))
-y.backward()
+# Config.enable_backprop = True
+# x = Variable(np.ones((100, 100, 100)))
+# y = square(square(square(x)))
+# y.backward()
 
-Config.enable_backprop = False
-x = Variable(np.ones((100, 100, 100)))
-y = square(square(square(x)))
+# Config.enable_backprop = False
+# x = Variable(np.ones((100, 100, 100)))
+# y = square(square(square(x)))
+# print(len(x))
+# print(f"shape={x.shape}")
+# print(x)
 
-with using_config('enable_backprop', False):
-    x = Variable(np.ones((100, 100, 100)))
-    y = square(square(square(x)))
 
-def no_grad():
-    return using_config('enable_backprop', False)
+# with using_config('enable_backprop', False):
+#     x = Variable(np.ones((100, 100, 100)))
+#     y = square(square(square(x)))
 
-with no_grad():
-    x = Variable(np.ones((100, 100, 100)))
-    y = square(square(square(x)))
+# def no_grad():
+#     return using_config('enable_backprop', False)
 
+# with no_grad():
+#     x = Variable(np.ones((100, 100, 100)))
+#     y = square(square(square(x)))
+
+a = Variable(np.array(3.0))
+b = Variable(np.array(2.0))
+y = a * b
+y
