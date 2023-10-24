@@ -1,6 +1,7 @@
-from src.Variable import Variable
-from src.mymath import *
-from src.tools import *
+from Variable import Variable
+from mymath import *
+from tools import *
+from Config import *
 
 # def numerical_diff(f, x, eps=1e-4):
 #     x0 = Variable(as_array(x.data - eps))
@@ -16,3 +17,25 @@ from src.tools import *
 
 # dy = numerical_diff(f, x)
 # print(dy)
+
+
+Config.enable_backprop = True
+x = Variable(np.ones((100, 100, 100)))
+y = square(square(square(x)))
+y.backward()
+
+Config.enable_backprop = False
+x = Variable(np.ones((100, 100, 100)))
+y = square(square(square(x)))
+
+with using_config('enable_backprop', False):
+    x = Variable(np.ones((100, 100, 100)))
+    y = square(square(square(x)))
+
+def no_grad():
+    return using_config('enable_backprop', False)
+
+with no_grad():
+    x = Variable(np.ones((100, 100, 100)))
+    y = square(square(square(x)))
+
