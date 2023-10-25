@@ -1,14 +1,6 @@
 from Variable import Function
 import numpy as np
 
-
-class Add(Function):
-    def forward(self, x0, x1):
-        y = x0 + x1
-        return y
-    def backward(self, gy):
-        return gy, gy
-
 class Square(Function):
     def forward(self, x):
         return x ** 2
@@ -27,12 +19,6 @@ class Exp(Function):
         x = self.inputs[0].data
         gx = np.exp(x) * gy
         return gx
-
-def add(x0, x1):
-    f = Add()
-    return f(x0, x1)
-
-
 
 def square(x):
     f = Square()

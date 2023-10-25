@@ -42,8 +42,14 @@ from Config import *
 # with no_grad():
 #     x = Variable(np.ones((100, 100, 100)))
 #     y = square(square(square(x)))
-
+# with using_config('enable_backprop', False):
 a = Variable(np.array(3.0))
 b = Variable(np.array(2.0))
 y = a * b
-y
+print(y)
+print(3.0 * a +  2.0)
+print(-a)
+print(a - 6.0)
+print(9.0 - a - 6.0)
+print(6.0 / a / 2.0 )
+print(a** 3)
