@@ -1,7 +1,11 @@
-from Variable import Variable
+
+if '__file__' in globals():
+    import os, sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
 from mymath import *
-from tools import *
-from Config import *
+from dezero import *
+
 
 # def numerical_diff(f, x, eps=1e-4):
 #     x0 = Variable(as_array(x.data - eps))
@@ -53,3 +57,4 @@ print(a - 6.0)
 print(9.0 - a - 6.0)
 print(6.0 / a / 2.0 )
 print(a** 3)
+print(y.grad)

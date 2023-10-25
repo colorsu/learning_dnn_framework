@@ -1,4 +1,4 @@
-from Variable import Function
+from dezero.core_simple import Function
 import numpy as np
 
 class Square(Function):

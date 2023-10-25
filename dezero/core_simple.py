@@ -1,6 +1,33 @@
+import contextlib
 import numpy as np
-from Config import Config
 import weakref
+
+class Config:
+    enable_backprop = True
+
+@contextlib.contextmanager
+def using_config(name, value):
+    old_value = getattr(Config, name)
+    setattr(Config, name, value)
+    try:
+        yield
+    finally:
+        setattr(Config, name, old_value)
+
+def as_array(x):
+    if np.isscalar(x):
+        return np.array(x)
+    
+    return x
+
+def as_variable(obj):
+    if isinstance(obj, Variable):
+        return obj
+
+    return Variable(obj)
+
+def no_grad():
+    return using_config('enable_backprop', False)
 
 def mul(x0, x1):
     x1 = as_array(x1)
@@ -32,29 +59,17 @@ def rdiv(x0, x1):
 def pow(x, c):
     return Pow(c)(x)
 
-class Function:
-    def __call__(self, *inputs):
-        inputs = [as_variable(x) for x in inputs]
-        xs = [x.data for x in inputs]
-        ys = self.forward(*xs)
-        if not isinstance(ys, tuple):
-            ys = (ys,)
-        outputs = [Variable(as_array(y)) for y in ys]
-
-        if Config.enable_backprop:
-            self.generation = max([x.generation for x in inputs])
-            for output in outputs:
-                output.set_creator(self)
-            self.inputs = inputs
-            self.outputs = [weakref.ref(output) for output in outputs]
-
-        return outputs if len(outputs) > 1 else outputs[0]
-
-    def forward(self, x):
-        raise NotImplementedError
-
-    def backward(self, gy):
-        raise NotImplementedError
+def setup_variable():
+    Variable.__add__ = add
+    Variable.__radd__ = add
+    Variable.__mul__ = mul
+    Variable.__rmul__ = mul
+    Variable.__neg__ = neg
+    Variable.__sub__ = sub
+    Variable.__rsub__ = rsub
+    Variable.__truediv__ = div
+    Variable.__rtruediv__ = rdiv
+    Variable.__pow__ = pow
 
 class Variable:
     __array_priority__ = 200
@@ -130,28 +145,30 @@ class Variable:
             if not retain_grad:
                 for y in f.outputs:
                     y().grad = None
-Variable.__add__ = add
-Variable.__radd__ = add
-Variable.__mul__ = mul
-Variable.__rmul__ = mul
-Variable.__neg__ = neg
-Variable.__sub__ = sub
-Variable.__rsub__ = rsub
-Variable.__truediv__ = div
-Variable.__rtruediv__ = rdiv
-Variable.__pow__ = pow
 
-def as_array(x):
-    if np.isscalar(x):
-        return np.array(x)
-    
-    return x
+class Function:
+    def __call__(self, *inputs):
+        inputs = [as_variable(x) for x in inputs]
+        xs = [x.data for x in inputs]
+        ys = self.forward(*xs)
+        if not isinstance(ys, tuple):
+            ys = (ys,)
+        outputs = [Variable(as_array(y)) for y in ys]
 
-def as_variable(obj):
-    if isinstance(obj, Variable):
-        return obj
+        if Config.enable_backprop:
+            self.generation = max([x.generation for x in inputs])
+            for output in outputs:
+                output.set_creator(self)
+            self.inputs = inputs
+            self.outputs = [weakref.ref(output) for output in outputs]
 
-    return Variable(obj)
+        return outputs if len(outputs) > 1 else outputs[0]
+
+    def forward(self, x):
+        raise NotImplementedError
+
+    def backward(self, gy):
+        raise NotImplementedError
 
 class Mul(Function):
     def forward(self, x0, x1):
