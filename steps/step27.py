@@ -5,6 +5,7 @@ if '__file__' in globals():
 import numpy as np
 from dezero import Function
 from dezero import Variable
+from dezero.utils import plot_dot_graph
 
 class Sin(Function):
     def forward(self, x):
