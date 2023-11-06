@@ -14,11 +14,9 @@ def using_config(name, value):
     finally:
         setattr(Config, name, old_value)
 
-
 def as_array(x):
     if np.isscalar(x):
         return np.array(x)
-    
     return x
 
 def as_variable(obj):
@@ -78,7 +76,7 @@ class Variable:
         if data is not None:
             if not isinstance(data, np.ndarray):
                 raise TypeError('{} is not supported'.format(type(data)))
-    
+
         self.data = data
         self.name = name
         self.grad = None
@@ -92,7 +90,7 @@ class Variable:
     @property
     def ndim(self):
         return self.data.ndim
-    
+
     @property
     def size(self):
         return self.data.size
@@ -139,15 +137,17 @@ class Variable:
             with using_config('enable_backprop', create_graph):
                 gxs = f.backward(*gys)
                 if not isinstance(gxs, tuple):
-                    gxs = (gxs,)
+                    gxs = (gxs, )
+
                 for x, gx in zip(f.inputs, gxs):
                     if x.grad is None:
                         x.grad = gx
                     else:
                         x.grad = x.grad + gx
+
                     if x.creator is not None:
                         add_func(x.creator)
-                
+
                 if not retain_grad:
                     for y in f.outputs:
                         y().grad = None
@@ -183,7 +183,7 @@ class Mul(Function):
         return y
     def backward(self, gy):
         x0, x1 = self.inputs
-        return gy * x1, gy * x1
+        return gy * x1, gy * x0
 
 class Add(Function):
     def forward(self, x0, x1):
