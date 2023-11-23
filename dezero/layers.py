@@ -109,6 +109,8 @@ class Linear(Layer):
 
     def forward(self, x):
         if self.W.data is None:
+            if len(x.shape) == 1:
+                x = x.reshape(-1, 1)
             self.in_size = x.shape[1]
             xp = cuda.get_array_module(x)
             self._init_W(xp)
